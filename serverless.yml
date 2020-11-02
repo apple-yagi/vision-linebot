@@ -60,13 +60,20 @@ provider:
 functions:
   hello:
     handler: handler.hello
+    events:
+      - http:
+          path: hello
+          method: get
+
+  callback:
+    handler: handler.callback
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
     events:
       - http:
           path: callback
-          method: get
+          method: post
 #      - websocket: $connect
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
@@ -114,3 +121,7 @@ functions:
 
 plugins:
   - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux

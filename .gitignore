@@ -22,3 +22,4 @@ var/
 # Module
 node_modules/
 vision-bot/
+requirements.txt
