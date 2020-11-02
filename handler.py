@@ -1,5 +1,5 @@
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage
+    MessageEvent, TextMessage, TextSendMessage, ImageMessage
 )
 from linebot.exceptions import (
     InvalidSignatureError
@@ -8,7 +8,10 @@ from linebot import (
     LineBotApi, WebhookHandler
 )
 import os
+import io
 import json
+import requests
+from PIL import Image
 import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -56,4 +59,27 @@ def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=event.message.text)
+    )
+
+
+@handler.add(MessageEvent, message=ImageMessage)
+def handle_image(event):
+    message_id = event.message.id
+    message_content = line_bot_api.get_message_content(message_id)
+    i = Image.open(io.BytesIO(message_content.content))
+    filename = '/tmp/' + message_id + '.jpg'
+    i.save(filename)
+
+    upload_file = {'file': open(filename, 'rb')}
+    vision_api_url = os.environ['VISION_API_URL']
+    response = requests.post(vision_api_url, files=upload_file)
+
+    data = response.json()
+    data_coding = json.dumps(data, indent=2)
+
+    os.remove(filename)
+
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=data_coding)
     )
