@@ -89,10 +89,10 @@ def handle_image(event):
 
 
 def pick_result(results) -> str:
-    result_text = ""
+    result_text = "\n概要  一致率"
     for result in results:
-        text = str(math.floor(result["score"] * 10000)
-                   / 100) + " " + result["description"]
+        text = result["description"] + " " + str(math.floor(result["score"] * 10000)
+                                                 / 100) + "%"
         result_text += "\n" + text
 
     return result_text
