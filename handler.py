@@ -10,6 +10,7 @@ from linebot import (
 import os
 import io
 import json
+import math
 import requests
 from PIL import Image
 import logging
@@ -75,11 +76,23 @@ def handle_image(event):
     response = requests.post(vision_api_url, files=upload_file)
 
     data = response.json()
-    data_coding = json.dumps(data, indent=2)
+    print(data)
+    key_list = list(data["responses"][0].keys())
+    text = "結果はこちら\n" + pick_result(data["responses"][0][key_list[0]])
 
     os.remove(filename)
 
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=data_coding)
+        TextSendMessage(text=text)
     )
+
+
+def pick_result(results) -> str:
+    result_text = ""
+    for result in results:
+        text = str(math.floor(result["score"] * 10000)
+                   / 100) + " " + result["description"]
+        result_text += "\n" + text
+
+    return result_text
