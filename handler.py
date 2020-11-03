@@ -40,6 +40,9 @@ def hello(event, context):
 
 def callback(event, context):
     try:
+        global detection_type
+        detection_type = event["queryStringParameters"]["type"]
+
         signature = event["headers"]["X-Line-Signature"]
         event_body = event["body"]
         handler.handle(event_body, signature)
@@ -72,11 +75,10 @@ def handle_image(event):
     i.save(filename)
 
     upload_file = {'file': open(filename, 'rb')}
-    vision_api_url = os.environ['VISION_API_URL']
+    vision_api_url = os.environ['VISION_API_URL'] + detection_type
     response = requests.post(vision_api_url, files=upload_file)
 
     data = response.json()
-    print(data)
     key_list = list(data["responses"][0].keys())
     text = "結果はこちら\n" + pick_result(data["responses"][0][key_list[0]])
 

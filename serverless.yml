@@ -74,6 +74,10 @@ functions:
       - http:
           path: callback
           method: post
+          request:
+            parameters:
+              querystrings:
+                type: true
 #      - websocket: $connect
 #      - s3: ${env:BUCKET}
 #      - schedule: rate(10 minutes)
