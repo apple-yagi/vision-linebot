@@ -42,7 +42,7 @@ def callback(event, context):
     try:
         global detection_type
         detection_type = event["queryStringParameters"]["type"]
-
+        print(event)
         signature = event["headers"]["X-Line-Signature"]
         event_body = event["body"]
         handler.handle(event_body, signature)
@@ -57,9 +57,6 @@ def callback(event, context):
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    if event.reply_token == "00000000000000000000000000000000":
-        return
-
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=event.message.text)
